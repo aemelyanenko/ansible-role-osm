@@ -26,10 +26,10 @@
   with_items:
     - openstreetmap-tile-server/
 
-- name: Download .pbf
+- name: "Download {{ pbf_url|basename }}"
   get_url:
     url: "{{ pbf_url }}"
-    dest: "/var/lib/openstreetmap-tile-server/{{ pbf_url | urlsplit('query') }}"
+    dest: "/var/lib/openstreetmap-tile-server/{{ pbf_url | basename }}"
     mode: '0644'
   register: result
   retries: 3
@@ -41,16 +41,23 @@
     path: /var/lib/openstreetmap-tile-server/data
   register: datadir
 
-- name: Import pbf
+- name: "Import /var/lib/openstreetmap-tile-server/{{ pbf_url | basename }}:/data.osm.pbf"
   docker_container:
     name: osm
     image: osm
     command: import
     volumes:
-      - "/var/lib/openstreetmap-tile-server/{{ pbf_url | urlsplit('query') }}:/data.osm.pbf"
+      - "/var/lib/openstreetmap-tile-server/{{ pbf_url | basename }}:/data.osm.pbf"
       - "/var/lib/openstreetmap-tile-server/data:/var/lib/postgresql/12/main"
       - "/var/lib/openstreetmap-tile-server/cache:/var/lib/mod_tile"
+    detach: false
   when: not datadir.stat.exists
+
+- name: Chmod mod_tile
+  file:
+    path: "/var/lib/openstreetmap-tile-server/cache/"
+    state: directory
+    mode: 0777
 
 - name: Start osm container
   docker_container:

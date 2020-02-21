@@ -2,6 +2,6 @@
 # defaults file for aemelyanenko.osm
 
 #pbf_url: 'http://download.geofabrik.de/russia-latest.osm.pbf'
-pbf_url: 'http://download.geofabrik.de/europe/andorra-latest.osm.pbf'
+pbf_url: 'http://download.geofabrik.de/asia/kazakhstan-latest.osm.pbf'
 domain_name: osm.local
 nginx_setup: true
