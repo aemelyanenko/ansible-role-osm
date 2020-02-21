@@ -1,0 +1,6 @@
+---
+# handlers file for aemelyanenko.osm
+- name: reload nginx
+  systemd:
+    name: nginx
+    state: reloaded

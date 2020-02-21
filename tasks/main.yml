@@ -1,0 +1,70 @@
+---
+# tasks file for aemelyanenko.osm
+
+- name: Install python-backports.ssl-match-hostname #https://github.com/docker/docker-py/issues/1502
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    name: python-backports.ssl-match-hostname
+
+- name: Git https://github.com/Overv/openstreetmap-tile-server.git
+  git:
+    repo: https://github.com/Overv/openstreetmap-tile-server.git
+    dest: /tmp/openstreetmap-tile-server/
+
+- name: Build osm image
+  docker_image:
+    name: osm
+    build:
+      path: /tmp/openstreetmap-tile-server/
+    source: build
+
+- name: Create dirs
+  file:
+    path: "/var/lib/{{ item }}"
+    state: directory
+  with_items:
+    - openstreetmap-tile-server/
+
+- name: Download .pbf
+  get_url:
+    url: "{{ pbf_url }}"
+    dest: "/var/lib/openstreetmap-tile-server/{{ pbf_url | urlsplit('query') }}"
+    mode: '0644'
+  register: result
+  retries: 3
+  delay: 10
+  until: result is not failed
+
+- name: Check datadir exist
+  stat:
+    path: /var/lib/openstreetmap-tile-server/data
+  register: datadir
+
+- name: Import pbf
+  docker_container:
+    name: osm
+    image: osm
+    command: import
+    volumes:
+      - "/var/lib/openstreetmap-tile-server/{{ pbf_url | urlsplit('query') }}:/data.osm.pbf"
+      - "/var/lib/openstreetmap-tile-server/data:/var/lib/postgresql/12/main"
+      - "/var/lib/openstreetmap-tile-server/cache:/var/lib/mod_tile"
+  when: not datadir.stat.exists
+
+- name: Start osm container
+  docker_container:
+    name: osm
+    image: osm
+    command: run
+    restart_policy: always
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - "/var/lib/openstreetmap-tile-server/data:/var/lib/postgresql/12/main"
+      - "/var/lib/openstreetmap-tile-server/cache:/var/lib/mod_tile"
+
+- name: Include nginx setup
+  include: "nginx.yml"
+  static: no
+  when: nginx_setup

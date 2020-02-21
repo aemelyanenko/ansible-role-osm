@@ -1,0 +1,12 @@
+---
+- name: Converge
+  become: true
+  hosts: all
+  vars:
+    ansible_python_interpreter: /usr/bin/python
+  roles:
+    - role: geerlingguy.pip
+      pip_install_packages:
+      - name: docker
+    - role: geerlingguy.docker
+    - role: aemelyanenko.osm

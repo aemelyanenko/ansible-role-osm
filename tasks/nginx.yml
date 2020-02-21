@@ -1,0 +1,21 @@
+---
+
+- name: Install nginx
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    name:
+      - nginx
+      - ssl-cert
+
+- name: Disable default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+
+- name: Enable osm config
+  template:
+    src: osm.conf.j2
+    dest: /etc/nginx/sites-enabled/osm.conf
+  notify: reload nginx
