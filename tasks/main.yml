@@ -1,7 +1,7 @@
 ---
 # tasks file for aemelyanenko.osm
 
-- name: Install python-backports.ssl-match-hostname #https://github.com/docker/docker-py/issues/1502
+- name: Install python-backports.ssl-match-hostname  # https://github.com/docker/docker-py/issues/1502
   apt:
     update_cache: true
     cache_valid_time: 3600
@@ -11,6 +11,7 @@
   git:
     repo: https://github.com/Overv/openstreetmap-tile-server.git
     dest: /tmp/openstreetmap-tile-server/
+    version: v1.3.10
 
 - name: Build osm image
   docker_image:
@@ -66,7 +67,7 @@
     command: run
     restart_policy: always
     ports:
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:{{ osm_port }}:80"
     volumes:
       - "/var/lib/openstreetmap-tile-server/data:/var/lib/postgresql/12/main"
       - "/var/lib/openstreetmap-tile-server/cache:/var/lib/mod_tile"

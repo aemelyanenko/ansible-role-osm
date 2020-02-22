@@ -2,7 +2,7 @@ proxy_cache_path  /var/www/cache levels=1:2 keys_zone=openstreetmap-backend-cach
 proxy_temp_path   /var/www/cache/tmp;
 
 upstream openstreetmap_backend {
-    server  127.0.0.1:8080;
+    server  127.0.0.1:{{ osm_port }};
   }
 
 server {
