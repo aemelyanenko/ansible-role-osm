@@ -4,6 +4,7 @@
   hosts: all
   vars:
     ansible_python_interpreter: /usr/bin/python
+    pbf_url: 'http://download.geofabrik.de/russia/south-fed-district-latest.osm.pbf'
   roles:
     - role: geerlingguy.pip
       pip_install_packages:
