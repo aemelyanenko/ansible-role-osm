@@ -12,9 +12,9 @@ Example Playbook
         pbf_url: 'http://download.geofabrik.de/russia/south-fed-district-latest.osm.pbf'
         pip_install_packages: docker
       roles:
-        - role: geerlingguy.pip
-        - role: geerlingguy.docker
-        - role: aemelyanenko.osm
+        - geerlingguy.pip
+        - geerlingguy.docker
+        - aemelyanenko.osm
 
 License
 -------
