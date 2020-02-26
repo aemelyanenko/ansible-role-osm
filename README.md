@@ -9,6 +9,7 @@ Example Playbook
 
     - hosts: servers
       vars:
+        domain_name: 'osm.local'
         pbf_url: 'http://download.geofabrik.de/russia/south-fed-district-latest.osm.pbf'
         pip_install_packages: docker
       roles:
